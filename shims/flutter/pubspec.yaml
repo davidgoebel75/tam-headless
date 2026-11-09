@@ -1,0 +1,6 @@
+name: flutter
+description: Headless-Ersatz fuer die wenigen Flutter-APIs des Taminations-Rechenkerns (Spike intern#163).
+publish_to: none
+version: 0.0.0
+environment:
+  sdk: ">=3.10.0 <4.0.0"

@@ -1,0 +1,4 @@
+.dart_tool/
+dist/
+*.zip
+pubspec.lock

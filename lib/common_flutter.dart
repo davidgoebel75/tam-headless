@@ -21,10 +21,8 @@ export 'dart:math';
 
 export 'package:xml/xml.dart';
 
-export 'button.dart';
 export 'color.dart';
 export 'common_dart.dart';
-export 'dance_painter.dart';
 export 'dancer.dart';
 export 'debug_switch.dart';
 export 'formation.dart';
@@ -32,8 +30,5 @@ export 'geometry.dart';
 export 'handhold.dart';
 export 'later.dart';
 export 'level_data.dart';
-export 'math/vectorui.dart';
 export 'settings.dart';
-export 'tam_state.dart';
 export 'tam_utils.dart';
-export 'title_bar.dart';

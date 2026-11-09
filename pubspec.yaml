@@ -1,0 +1,23 @@
+# Spike intern#163: Taminations-Sequencer ohne Flutter als eigenstaendige Exe.
+# lib/ = Upstream-Code taminations-flutter @ d96ed75 (Aenderungen im Git-Log dokumentiert),
+# shims/ = schlanke Ersatzpakete fuer die wenigen Flutter-/Plugin-APIs des Rechenkerns.
+name: taminations
+publish_to: none
+version: 0.0.1
+environment:
+  sdk: ">=3.10.0 <4.0.0"
+dependencies:
+  xml: ^6.3.0
+  vector_math: any
+  tuple: ^2.0.0
+  bezier: any
+  scidart: ^0.0.2-dev.11
+  platform: any
+  flutter:
+    path: shims/flutter
+  provider:
+    path: shims/provider
+  super_clipboard:
+    path: shims/super_clipboard
+  shared_preferences:
+    path: shims/shared_preferences
