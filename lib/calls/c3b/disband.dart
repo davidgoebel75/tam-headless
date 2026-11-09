@@ -1,0 +1,152 @@
+/*
+
+  Taminations Square Dance Animations
+  Copyright (C) 2026 Brad Christie
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+import '../../animated_call.dart';
+import '../../common_dart.dart';
+import '../../moves.dart';
+
+  final List<AnimatedCall> Disband = [
+
+    AnimatedCall('Disband',
+      formation:Formation('Ocean Waves RH BGGB'),
+      from:'Right-Hand Waves',parts:'3.5',
+      paths:[
+          Forward_2 +
+          QuarterLeft.changehands(Hands.LEFT).skew(1.0,0.0) +
+          RunLeft +
+          Forward,
+
+          CounterRotateLeft(0,2).changeBeats(3.5).changehands(Hands.LEFT).skew(-1.0,0.0) +
+          FlipRight.skew(1.0,0.0),
+
+          CounterRotateLeft(2,0).changeBeats(3.5).changehands(Hands.LEFT).skew(1.0,0.0) +
+          FlipRight.skew(-1.0,0.0),
+
+          RunLeft.changeBeats(2).skew(-2.0,-1.0) +
+          HingeLeft +
+          Forward_5
+      ]),
+
+    AnimatedCall('Disband',
+      formation:Formation('Ocean Waves LH BGGB'),
+      from:'Left-Hand Waves',parts:'3.5',
+      paths:[
+          RunRight.changeBeats(2).skew(-2.0,1.0) +
+          HingeRight +
+          Forward_5,
+
+          CounterRotateRight(2,0).changeBeats(3.5).changehands(Hands.RIGHT).skew(1.0,0.0) +
+          FlipLeft.skew(-1.0,0.0),
+
+          CounterRotateRight(0,-2).changeBeats(3.5).changehands(Hands.RIGHT).skew(-1.0,0.0) +
+          FlipLeft.skew(1.0,0.0),
+
+          Forward_2 +
+          QuarterRight.changehands(Hands.RIGHT).skew(1.0,0.0) +
+          RunRight +
+          Forward
+      ]),
+
+    AnimatedCall('Disband',
+      formation:Formation('Two-Faced Lines RH'),
+      from:'Right-Hand Two-Faced Lines',parts:'3.5',
+      paths:[
+          Forward_2 +
+          QuarterLeft.changehands(Hands.LEFT).skew(1.0,0.0) +
+          RunLeft +
+          Forward,
+
+          CounterRotateRight(2,0).changeBeats(3.5).changehands(Hands.RIGHT).skew(1.0,0.0) +
+          FlipLeft.skew(-1.0,0.0),
+
+          CounterRotateRight(0,-2).changeBeats(3.5).changehands(Hands.RIGHT).skew(-1.0,0.0) +
+          FlipLeft.skew(1.0,0.0),
+
+          RunLeft.changeBeats(2).skew(-2.0,-1.0) +
+          HingeLeft +
+          Forward_5
+      ]),
+
+    AnimatedCall('Disband',
+      formation:Formation('Two-Faced Lines LH'),
+      from:'Left-Hand Two-Faced Lines',parts:'3.5',
+      paths:[
+          RunRight.changeBeats(2).skew(-2.0,1.0) +
+          HingeRight +
+          Forward_5,
+
+          CounterRotateLeft(0,2).changeBeats(3.5).changehands(Hands.LEFT).skew(-1.0,0.0) +
+          FlipRight.skew(1.0,0.0),
+
+          CounterRotateLeft(2,0).changeBeats(3.5).changehands(Hands.LEFT).skew(1.0,0.0) +
+          FlipRight.skew(-1.0,0.0),
+
+          Forward_2 +
+          QuarterRight.changehands(Hands.RIGHT).skew(1.0,0.0) +
+          RunRight +
+          Forward
+      ]),
+
+    AnimatedCall('Disband',
+      formation:Formation('Column RH GBGB'),
+      from:'Right-Hand Columns',parts:'4',
+      paths:[
+          RunLeft.changeBeats(3).scale(1.0,1.25).skew(-3.0,0.0) +
+          HingeLeft.changeBeats(1).scale(1.0,0.5) +
+          Forward_5,
+
+          CounterRotateRight(0,-2).changeBeats(4).changehands(Hands.RIGHT) +
+          FlipLeft.skew(1.0,0.0),
+
+          CounterRotateRight(2,0).changeBeats(4).changehands(Hands.RIGHT) +
+          FlipLeft.skew(-1.0,0.0),
+
+          ExtendLeft.changeBeats(3).scale(3.0,1.5) +
+          HingeLeft.changeBeats(1).scale(1.0,0.5) +
+          RunLeft +
+          Forward
+      ]),
+
+    AnimatedCall('Disband',
+      formation:Formation('', dancers:[
+        Dancer.fromData(gender:Gender.BOY,x:1,y:3,angle:90),
+        Dancer.fromData(gender:Gender.GIRL,x:1,y:1,angle:90),
+        Dancer.fromData(gender:Gender.BOY,x:-1,y:3,angle:270),
+        Dancer.fromData(gender:Gender.GIRL,x:-1,y:1,angle:270),
+  ]),
+      from:'Left-Hand Columns',parts:'4',
+      paths:[
+          RunRight.changeBeats(3).scale(1.0,1.25).skew(-3.0,0.0) +
+          HingeRight.changeBeats(1).scale(1.0,0.5) +
+          Forward_5,
+
+          CounterRotateLeft(0,2).changeBeats(4).changehands(Hands.LEFT) +
+          FlipRight.skew(1.0,0.0),
+
+          ExtendRight.changeBeats(3).scale(3.0,1.5) +
+          HingeRight.changeBeats(1).scale(1.0,0.5) +
+          RunRight +
+          Forward,
+
+          CounterRotateLeft(2,0).changeBeats(4).changehands(Hands.LEFT) +
+          FlipRight.skew(-1.0,0.0)
+      ]),
+  ];
+

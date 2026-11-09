@@ -1,0 +1,88 @@
+/*
+
+  Taminations Square Dance Animations
+  Copyright (C) 2026 Brad Christie
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+import '../common.dart';
+
+class ScootChainThru extends Action with CallWithParts, IsToAWave {
+
+  @override var numberOfParts = 5;
+  @override var ignoreSpecifier = true;
+  @override var level = LevelData.A2;
+  @override var helplink = 'a2/scoot_chain_thru';
+  @override String get help => '''$name is a 5-part call:
+  1.  From waves, leaders${name.contains('Scatter')?'':'Split'} Circulate while trailers Extend
+      From 1/4 Tag, everyone Extend
+  2.  Wave dancers Swing
+  3.  Wave dancers Slip
+  4.  Wave dancers Swing
+  5.  Wave dancers Extend''';
+
+  ScootChainThru(super.name);
+
+  @override
+   void performPart1(CallContext ctx) {
+    var split = name.contains('Scatter') ? 'All 8' : 'Split';
+    if (ctx.isWaves()) {
+      ctx.applyCalls('Leaders Do Your Part $split Circulate'
+          ' While Trailers Do Your Part Extend');
+    }
+    else
+      //  Presume 1/4 Tag
+      ctx.applyCalls('Extend');
+  }
+
+  @override
+   void performPart2(CallContext ctx) {
+    if (ctx.isWaves())
+      ctx.applyCalls('Swing');
+    else
+      ctx.applyCalls('Center Wave of 4 Swing');
+  }
+
+  @override
+   void performPart3(CallContext ctx) {
+    if (ctx.isWaves())
+      ctx.applyCalls('Slip');
+    else
+      ctx.applyCalls('Center Wave of 4 Slip');
+  }
+
+  @override
+   void performPart4(CallContext ctx) {
+    if (ctx.isWaves())
+      ctx.applyCalls('Swing');
+    else
+      ctx.applyCalls('Center Wave of 4 Swing');
+  }
+
+  @override
+   void performPart5(CallContext ctx) {
+    if (ctx.isWaves())
+      ctx.applyCalls('Extend');
+    else {
+      if (isToAWave) {
+        ctx.applyCalls('Adjust to 1/4 Tag');
+      }
+      else
+        ctx.applyCalls('Center Wave of 4 Step');
+    }
+  }
+
+}

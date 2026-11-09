@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE tamination SYSTEM "../src/tamination.dtd">
+<!--
+
+  Taminations Square Dance Animations
+  Copyright (C) 2026 Brad Christie
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<tamination title="Latch On">
+
+    <tam title="Latch On"
+       from="Couples Facing Out"
+       formation="Couples Facing Out"
+       parts="4" >
+    <path>
+      <move select="Flip Right" beats="4" offsetX="-2" />
+      <move select="Hinge Right"/>
+    </path>
+    <path>
+      <move select="U-Turn Right" beats="4" offsetX="-2" />
+      <move select="Hinge Right"/>
+    </path>
+  </tam>
+
+
+</tamination>

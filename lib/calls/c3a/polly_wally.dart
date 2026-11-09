@@ -1,0 +1,216 @@
+/*
+
+  Taminations Square Dance Animations
+  Copyright (C) 2026 Brad Christie
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+import '../../animated_call.dart';
+import '../../common_dart.dart';
+import '../../moves.dart';
+
+  final List<AnimatedCall> PollyWally = [
+
+    AnimatedCall('Polly Wally',
+      formation:Formation('', dancers:[
+        Dancer.fromData(gender:Gender.GIRL,x:-1,y:3,angle:90),
+        Dancer.fromData(gender:Gender.GIRL,x:-1,y:1,angle:90),
+        Dancer.fromData(gender:Gender.BOY,x:-1,y:-1,angle:90),
+        Dancer.fromData(gender:Gender.BOY,x:-1,y:-3,angle:90),
+  ]),
+      from:'Right-Hand Columns',
+      paths:[
+          FlipLeft.changeBeats(6).skew(-1.0,0.0),
+
+          FlipLeft +
+          Forward_3,
+
+          ExtendRight.changeBeats(3).scale(0.5,2.0) +
+          Forward.changeBeats(3).scale(2.5,1.0),
+
+          FlipRight.changeBeats(6).skew(1.0,0.0)
+      ]),
+
+    AnimatedCall('Polly Wally',
+      formation:Formation('Column LH GBGB'),
+      from:'Left-Hand Columns',
+      paths:[
+          FlipRight.changeBeats(6).skew(1.0,0.0),
+
+          ExtendRight.changeBeats(3).scale(0.5,2.0) +
+          Forward.changeBeats(3).scale(2.5,1.0),
+
+          FlipLeft +
+          Forward_3,
+
+          FlipLeft.changeBeats(6).skew(-1.0,0.0)
+      ]),
+
+    AnimatedCall('Polly Wally',
+      formation:Formation('Double Pass Thru'),
+      from:'Double Pass Thru',
+      paths:[
+          FlipRight.changeBeats(6).skew(1.0,0.0),
+
+          FlipRight.changeBeats(6).skew(1.0,0.0),
+
+          ExtendRight.changeBeats(3).scale(0.5,2.0) +
+          Forward.changeBeats(3).scale(2.5,1.0),
+
+          ExtendRight.changeBeats(3).scale(0.5,2.0) +
+          Forward.changeBeats(3).scale(2.5,1.0)
+      ]),
+
+    AnimatedCall('Polly Wally',
+      formation:Formation('Completed Double Pass Thru'),
+      from:'Completed Double Pass Thru',
+      paths:[
+          FlipLeft.changeBeats(6).skew(-1.0,0.0),
+
+          FlipLeft.changeBeats(6).skew(-1.0,0.0),
+
+          FlipLeft +
+          Forward_3,
+
+          FlipLeft +
+          Forward_3
+      ]),
+
+    AnimatedCall('Polly Wally',
+        formation:Formation('Eight Chain Thru'),
+        from:'Eight Chain Thru',
+        paths:[
+          FlipRight.changeBeats(6).skew(1.0,0.0),
+
+          FlipRight.changeBeats(6).skew(1.0,0.0),
+
+          FlipLeft +
+              Forward_3,
+
+          FlipLeft +
+              Forward_3
+        ]),
+
+    AnimatedCall('Polly Wally',
+        formation:Formation('Trade By'),
+        from:'Trade By',
+        paths:[
+          FlipLeft.changeBeats(6).skew(-1.0,0.0),
+
+          FlipLeft.changeBeats(6).skew(-1.0,0.0),
+
+          ExtendRight.changeBeats(3).scale(0.5,2.0) +
+              Forward.changeBeats(3).scale(2.5,1.0),
+
+          ExtendRight.changeBeats(3).scale(0.5,2.0) +
+              Forward.changeBeats(3).scale(2.5,1.0),
+        ]),
+
+
+
+    AnimatedCall('Reverse Polly Wally',
+        formation:Formation('Column RH GBGB'),
+        from:'Right-Hand Columns',
+        paths:[
+          FlipRight.changeBeats(6).skew(-1.0,0.0),
+
+          FlipRight +
+              Forward_3,
+
+          ExtendLeft.changeBeats(3).scale(0.5,2.0) +
+              Forward.changeBeats(3).scale(2.5,1.0),
+
+          FlipLeft.changeBeats(6).skew(1.0,0.0)
+        ]),
+
+    AnimatedCall('Reverse Polly Wally',
+        formation:Formation('Column LH GBGB'),
+        from:'Left-Hand Columns',
+        paths:[
+          FlipLeft.changeBeats(6).skew(1.0,0.0),
+
+          ExtendLeft.changeBeats(3).scale(0.5,2.0) +
+              Forward.changeBeats(3).scale(2.5,1.0),
+
+          FlipRight +
+              Forward_3,
+
+          FlipRight.changeBeats(6).skew(-1.0,0.0)
+        ]),
+
+    AnimatedCall('Reverse Polly Wally',
+        formation:Formation('Double Pass Thru'),
+        from:'Double Pass Thru',
+        paths:[
+          FlipLeft.changeBeats(6).skew(1.0,0.0),
+
+          FlipLeft.changeBeats(6).skew(1.0,0.0),
+
+          ExtendLeft.changeBeats(3).scale(0.5,2.0) +
+              Forward.changeBeats(3).scale(2.5,1.0),
+
+          ExtendLeft.changeBeats(3).scale(0.5,2.0) +
+              Forward.changeBeats(3).scale(2.5,1.0)
+        ]),
+
+    AnimatedCall('Reverse Polly Wally',
+        formation:Formation('Completed Double Pass Thru'),
+        from:'Completed Double Pass Thru',
+        paths:[
+          FlipRight.changeBeats(6).skew(-1.0,0.0),
+
+          FlipRight.changeBeats(6).skew(-1.0,0.0),
+
+          FlipRight +
+              Forward_3,
+
+          FlipRight +
+              Forward_3
+        ]),
+
+    AnimatedCall('Reverse Polly Wally',
+        formation:Formation('Eight Chain Thru'),
+        from:'Eight Chain Thru',
+        paths:[
+          FlipLeft.changeBeats(6).skew(1.0,0.0),
+
+          FlipLeft.changeBeats(6).skew(1.0,0.0),
+
+          FlipRight +
+              Forward_3,
+
+          FlipRight +
+              Forward_3
+        ]),
+
+    AnimatedCall('Reverse Polly Wally',
+        formation:Formation('Trade By'),
+        from:'Trade By',
+        paths:[
+          FlipRight.changeBeats(6).skew(-1.0,0.0),
+
+          FlipRight.changeBeats(6).skew(-1.0,0.0),
+
+          ExtendLeft.changeBeats(3).scale(0.5,2.0) +
+              Forward.changeBeats(3).scale(2.5,1.0),
+
+          ExtendLeft.changeBeats(3).scale(0.5,2.0) +
+              Forward.changeBeats(3).scale(2.5,1.0),
+        ]),
+
+
+  ];
+

@@ -1,0 +1,59 @@
+/*
+
+  Taminations Square Dance Animations
+  Copyright (C) 2026 Brad Christie
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+import '../common.dart';
+
+class Sidetrack extends Action with CallWithParts, ActivesOnly {
+
+  @override var level = LevelData.C3B;
+  @override var numberOfParts = 3;
+  @override var help = '''Sidetrack has 3 parts:
+  1.  Zig Zag
+  2.  Counter Rotate
+  3.  Roll
+Variations
+  Single Sidetrack - replace Part 2 with Lockit
+  Split Sidetrack - replace Part 2 with Split Counter Rotate''';
+  @override var helplink = 'c3b/sidetrack';
+
+  Sidetrack(super.name);
+
+  @override
+   void performPart1(CallContext ctx) {
+    ctx.applyCalls('Zig Zag');
+    ctx.matchStandardFormation();
+  }
+
+  @override
+   void performPart2(CallContext ctx) {
+    if (name.contains('single'.ri))
+      ctx.applyCalls('Lockit');
+    else if (name.contains('split'.ri))
+      ctx.applyCalls('Split Counter Rotate');
+    else
+      ctx.applyCalls('Counter Rotate');
+  }
+
+  @override
+   void performPart3(CallContext ctx) {
+    ctx.applyCalls('Roll');
+  }
+
+}

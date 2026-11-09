@@ -1,0 +1,309 @@
+/*
+
+  Taminations Square Dance Animations
+  Copyright (C) 2026 Brad Christie
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+import '../../animated_call.dart';
+import '../../common_dart.dart';
+import '../../moves.dart';
+
+  final List<AnimatedCall> SpinTheTop = [
+
+    AnimatedCall('Spin the Top',
+      formation:Formation('Wave RH GBBG'),
+      from:'Right-Hand Wave',parts:'3',difficulty: 1,
+      paths:[
+          SwingRight +
+          HingeLeft +
+          HingeLeft +
+          HingeLeft,
+
+          SwingRight +
+          LeadRight.changeBeats(4.5).scale(3.0,3.0)
+      ]),
+
+    AnimatedCall('Spin the Top',
+      formation:Formation('Wave LH GBBG'),
+      from:'Left-Hand Wave',parts:'3',difficulty: 2,
+      paths:[
+          SwingLeft +
+          HingeRight +
+          HingeRight +
+          HingeRight,
+
+          SwingLeft +
+          LeadLeft.changeBeats(4.5).scale(3.0,3.0)
+      ]),
+
+    AnimatedCall('Spin the Top',
+      formation:Formation('Facing Couples Compact'),
+      from:'Facing Couples',parts:'5',difficulty: 2,
+      paths:[
+          ExtendLeft.changeBeats(2).scale(1.5,2.0) +
+          SwingRight +
+          CastLeft,
+
+          Forward_1p5.changeBeats(2) +
+          SwingRight +
+          LeadRight.changeBeats(4.5).scale(3.0,3.0)
+      ]),
+
+    AnimatedCall('Spin the Top',
+      formation:Formation('Facing Couples Close'),
+      from:'Close Couples',parts:'4',difficulty: 2,noDisplay: true,
+      paths:[
+          ExtendLeft.scale(1.0,0.5) +
+          SwingRight.scale(0.5,0.5) +
+          CastLeft.scale(0.5,0.5),
+
+          ExtendLeft.scale(1.0,0.5) +
+          SwingRight.scale(0.5,0.5) +
+          LeadRight.changeBeats(4.5).scale(1.5,1.5)
+      ]),
+
+    AnimatedCall('Spin the Top',
+      formation:Formation('Ocean Waves RH GBBG Compact'),
+      from:'Right-Hand Waves',parts:'3',difficulty: 1,
+      paths:[
+          SwingRight +
+          HingeLeft.skew(0.5,0) +
+          HingeLeft +
+          HingeLeft.scale(0.5,1.0),
+
+          SwingRight +
+          LeadRight.changeBeats(4.5).scale(1,3),
+
+          SwingRight +
+          LeadRight.changeBeats(4.5).scale(2,3),
+
+          SwingRight +
+          HingeLeft.skew(-0.5,0) +
+          HingeLeft +
+          HingeLeft.scale(0.5,1.0)
+      ]),
+
+    AnimatedCall('Spin the Top',
+      formation:Formation('Ocean Waves LH GBBG Compact'),
+      from:'Left-Hand Waves',parts:'3',difficulty: 2,
+      paths:[
+          SwingLeft +
+          HingeRight.skew(-0.5,0) +
+          HingeRight +
+          HingeRight.scale(0.5,1.0),
+
+          SwingLeft +
+          LeadLeft.changeBeats(4.5).scale(2,3),
+
+          SwingLeft +
+          LeadLeft.changeBeats(4.5).scale(1,3),
+
+          SwingLeft +
+          HingeRight.skew(0.5,0) +
+          HingeRight +
+          HingeRight.scale(0.5,1.0)
+      ]),
+
+    AnimatedCall('Spin the Top',
+      formation:Formation('Tidal Wave RH GBBG'),
+      from:'Right-Hand Tidal Wave',parts:'3',difficulty: 1,
+      paths:[
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          HingeLeft.scale(1.0,0.5) +
+          SwingLeft.skew(0.5,0),
+
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          LeadRight.changeBeats(4.5).scale(3,2),
+
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          LeadRight.changeBeats(4.5).scale(3,1),
+
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          HingeLeft.scale(1.0,0.5) +
+          SwingLeft.skew(-0.5,0)
+      ]),
+
+    AnimatedCall('Spin the Top',
+      formation:Formation('Tidal Wave LH BGGB'),
+      from:'Left-Hand Tidal Wave',parts:'3',difficulty: 2,
+      paths:[
+          SwingLeft.changehands(Hands.GRIPLEFT).scale(0.5,0.5) +
+          HingeRight.scale(1.0,0.5) +
+          SwingRight.skew(0.5,0),
+
+          SwingLeft.changehands(Hands.GRIPLEFT).scale(0.5,0.5) +
+          LeadLeft.changeBeats(4.5).scale(3,2),
+
+          SwingLeft.changehands(Hands.GRIPLEFT).scale(0.5,0.5) +
+          LeadLeft.changeBeats(4.5).scale(3,1),
+
+          SwingLeft.changehands(Hands.GRIPLEFT).scale(0.5,0.5) +
+          HingeRight.scale(1.0,0.5) +
+          SwingRight.skew(-0.5,0)
+      ]),
+
+    AnimatedCall('Spin the Top',
+      formation:Formation('Eight Chain Thru'),
+      from:'Eight Chain Thru',parts:'4',difficulty: 2,
+      paths:[
+          ExtendLeft.scale(1.0,0.5) +
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          CastLeft.scale(0.5,0.5),
+
+          ExtendLeft.scale(1.0,0.5) +
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          LeadRight.changeBeats(4.5).scale(1.5,1.5),
+
+          ExtendLeft.scale(1.0,0.5) +
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          CastLeft.scale(0.5,0.5),
+
+          ExtendLeft.scale(1.0,0.5) +
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          LeadRight.changeBeats(4.5).scale(1.5,1.5)
+      ]),
+
+    AnimatedCall('Spin the Top',
+      formation:Formation('Normal Lines Compact'),
+      from:'Lines',parts:'5',difficulty: 3,
+      paths:[
+          ExtendLeft.changeBeats(2).scale(1.5,0.5) +
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          HingeLeft.scale(1.0,0.5) +
+          SwingLeft.skew(0.5,0),
+
+          ExtendLeft.changeBeats(2).scale(1.5,0.5) +
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          LeadRight.changeBeats(4.5).scale(3,1),
+
+          ExtendLeft.changeBeats(2).scale(1.5,0.5) +
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          HingeLeft.scale(1.0,0.5) +
+          SwingLeft.skew(-0.5,0),
+
+          ExtendLeft.changeBeats(2).scale(1.5,0.5) +
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          LeadRight.changeBeats(4.5).scale(3,2)
+      ]),
+
+    AnimatedCall('Left Spin the Top',
+      formation:Formation('Facing Couples Compact'),
+      from:'Facing Couples',parts:'5',difficulty: 3,
+      paths:[
+          Forward_1p5.changeBeats(2) +
+          SwingLeft +
+          LeadLeft.changeBeats(4.5).scale(3.0,3.0),
+
+          ExtendRight.changeBeats(2).scale(1.5,2.0) +
+          SwingLeft +
+          CastRight
+      ]),
+
+    AnimatedCall('Left Spin the Top',
+      formation:Formation('Facing Couples Close'),
+      from:'Close Couples',parts:'4',difficulty: 2,noDisplay: true,
+      paths:[
+          ExtendRight.scale(1.0,0.5) +
+          SwingLeft.scale(0.5,0.5) +
+          LeadLeft.changeBeats(4.5).scale(1.5,1.5),
+
+          ExtendRight.scale(1.0,0.5) +
+          SwingLeft.scale(0.5,0.5) +
+          CastRight.scale(0.5,0.5)
+      ]),
+
+    AnimatedCall('Left Spin the Top',
+      formation:Formation('Eight Chain Thru'),
+      from:'Eight Chain Thru',parts:'4',difficulty: 3,
+      paths:[
+          ExtendRight.scale(1.0,0.5) +
+          SwingLeft.changehands(Hands.GRIPLEFT).scale(0.5,0.5) +
+          LeadLeft.changeBeats(4.5).scale(1.5,1.5),
+
+          ExtendRight.scale(1.0,0.5) +
+          SwingLeft.changehands(Hands.GRIPLEFT).scale(0.5,0.5) +
+          CastRight.scale(0.5,0.5),
+
+          ExtendRight.scale(1.0,0.5) +
+          SwingLeft.changehands(Hands.GRIPLEFT).scale(0.5,0.5) +
+          LeadLeft.changeBeats(4.5).scale(1.5,1.5),
+
+          ExtendRight.scale(1.0,0.5) +
+          SwingLeft.changehands(Hands.GRIPLEFT).scale(0.5,0.5) +
+          CastRight.scale(0.5,0.5)
+      ]),
+
+    AnimatedCall('Left Spin the Top',
+      formation:Formation('Normal Lines Compact'),
+      from:'Lines',parts:'5',difficulty: 3,
+      paths:[
+          ExtendRight.changeBeats(2).scale(1.5,0.5) +
+          SwingLeft.changehands(Hands.GRIPLEFT).scale(0.5,0.5) +
+          LeadLeft.changeBeats(4.5).scale(3,2),
+
+          ExtendRight.changeBeats(2).scale(1.5,0.5) +
+          SwingLeft.changehands(Hands.GRIPLEFT).scale(0.5,0.5) +
+          HingeRight.scale(1.0,0.5) +
+          SwingRight.skew(-0.5,0),
+
+          ExtendRight.changeBeats(2).scale(1.5,0.5) +
+          SwingLeft.changehands(Hands.GRIPLEFT).scale(0.5,0.5) +
+          LeadLeft.changeBeats(4.5).scale(3,1),
+
+          ExtendRight.changeBeats(2).scale(1.5,0.5) +
+          SwingLeft.changehands(Hands.GRIPLEFT).scale(0.5,0.5) +
+          HingeRight.scale(1.0,0.5) +
+          SwingRight.skew(0.5,0)
+      ]),
+
+    AnimatedCall('Heads Spin the Top',
+      formation:Formation('Static Square'),
+      from:'Static Square',group:' ',parts:'6',difficulty: 2,
+      paths:[
+          ExtendLeft.changeBeats(3).scale(3.0,0.5) +
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          HingeLeft.scale(1.0,0.5) +
+          SwingLeft,
+
+          ExtendLeft.changeBeats(3).scale(3.0,0.5) +
+          SwingRight.changehands(Hands.GRIPRIGHT).scale(0.5,0.5) +
+          LeadRight.changeBeats(4.5).scale(3.0,1.5),
+
+          Path(),
+
+          Path()
+      ]),
+
+    AnimatedCall('Heads Left Spin the Top',
+      formation:Formation('Static Square'),
+      from:'Static Square',group:' ',parts:'6',difficulty: 3,
+      paths:[
+          ExtendRight.changeBeats(3).scale(3.0,0.5) +
+          SwingLeft.scale(0.5,0.5) +
+          LeadLeft.changeBeats(4.5).scale(3.0,1.5),
+
+          ExtendRight.changeBeats(3).scale(3.0,0.5) +
+          SwingLeft.scale(0.5,0.5) +
+          HingeRight.scale(1.0,0.5) +
+          SwingRight,
+
+          Path(),
+
+          Path()
+      ]),
+  ];
+

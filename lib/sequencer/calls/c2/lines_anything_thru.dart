@@ -1,0 +1,42 @@
+/*
+
+  Taminations Square Dance Animations
+  Copyright (C) 2026 Brad Christie
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+import '../common.dart';
+
+class LinesAnythingThru extends Action {
+
+  @override var level = LevelData.C2;
+  @override var help = 'Lines (call) Thru: Centers do the call, others Circulate';
+  @override var helplink = 'c2/lines_anything_thru';
+
+  LinesAnythingThru(super.name);
+
+  @override
+  void performCall(CallContext ctx) {
+    var anyCall = name.replaceMatch('Lines\\s*(.*)\\s*Thru'.r, '\\1');
+    if (anyCall.isBlank)
+      throw CallError('Lines what Thru?');
+    ctx.applyCalls('Outer 4 Circulate While Center 4 $anyCall');
+    //  Make sure centers and ends are separate and
+    //  the program doesn't try to adjust to a 1/4 tag
+    ctx.checkCenters();
+  }
+
+}

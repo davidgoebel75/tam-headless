@@ -1,0 +1,658 @@
+/*
+
+  Taminations Square Dance Animations
+  Copyright (C) 2026 Brad Christie
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+import 'package:flutter/gestures.dart' as fg;
+import 'package:flutter/material.dart' as fm;
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart' as pp;
+import 'package:taminations/animated_call.dart';
+
+import '../sequencer/sequencer_model.dart';
+import '../beat_notifier.dart';
+import '../call_index.dart';
+import '../common_flutter.dart';
+import '../dance_model.dart';
+import 'page.dart';
+
+class AnimationState extends fm.ChangeNotifier {
+
+  double beat = 0.0;
+  int _part = 0;
+
+  int get part => _part;
+  set part(int value) {
+    _part = value;
+    notifyListeners();
+  }
+
+}
+
+void _startModel(fm.BuildContext context, TamState tamState, TitleModel? titleModel) {
+  final model = pp.Provider.of<DanceModel>(context,listen:false);
+  var callEntry = callIndex.firstWhere((element) => element.link == tamState.link);
+  var tamList = flattenAnimatedCallList(callEntry.calls)
+      .where((it) => DebugSwitch.showHiddenAnimations.enabled || !it.noDisplay).toList();
+  var tam = tamList[0];
+  if (tamState.animnum >= 0 && tamState.animnum < tamList.length)
+    tam = tamList[tamState.animnum];
+  else if (tamState.animname != null)
+    tam = tamList.firstWhere((it) {
+      return it.title == tamState.animname &&
+          isSame(it.group, tamState.animgroup) &&
+          isSame(it.from, tamState.animfrom);
+    },orElse: () => tam);
+  model.setAnimatedCall(tam, geometryType: Geometry.fromString(Settings.geometry).geometry);
+  if (titleModel != null)
+    titleModel.title = tam.title;
+}
+
+
+class AnimationPage extends fm.StatelessWidget {
+
+  @override
+  fm.Widget build(fm.BuildContext context) {
+    return Page(
+      child: pp.ChangeNotifierProvider(
+        create: (_) => DanceModel(context),
+        child: pp.Consumer2<TamState,TitleModel>(
+            builder: (context, tamState, titleModel, _) {
+              _startModel(context,tamState,titleModel);
+              return fm.Column(
+                children: [
+                  fm.Expanded(child: AnimationFrame()),
+                  fm.Container(
+                    color: Color.FLOOR,
+                    child: ButtonRow()
+                  )
+                ],
+              );
+            }
+        ),
+      ),
+    );
+  }
+}
+
+class DefinitionButton extends fm.StatelessWidget {
+  @override
+  fm.Widget build(fm.BuildContext context) {
+    return pp.Consumer<TamState>(
+      builder: (context,tamState,_) {
+        return Button('Definition', onPressed: () {
+          tamState.change(detailPage: DetailPage.DEFINITION);
+        });
+      }
+    );
+  }
+}
+
+class SettingsButton extends fm.StatelessWidget {
+  @override
+  fm.Widget build(fm.BuildContext context) {
+    return pp.Consumer<TamState>(
+        builder: (context,tamState,_) {
+          return Button('Settings', onPressed: () {
+            tamState.change(detailPage: DetailPage.SETTINGS);
+          });
+        }
+    );
+  }
+}
+
+class CopyImageButton extends fm.StatelessWidget {
+  @override
+  fm.Widget build(fm.BuildContext context) {
+    return pp.Consumer<DanceModel>(
+        builder: (context,danceModel,_) {
+          return fm.Expanded(
+            child: Button('Copy', onPressed: () async {
+              var msg = await danceModel.copyImageToClipboard();
+              fm.ScaffoldMessenger.of(context).showSnackBar(fm.SnackBar(
+                  backgroundColor: Color.BLUE,
+                  duration: Duration(seconds: 2),
+                  content: fm.Text(msg,
+                      style: GoogleFonts.roboto(fontSize: 20))
+              ));
+            }),
+          );
+        }
+    );
+  }
+}
+
+class ButtonRow extends fm.StatelessWidget {
+  @override
+  fm.Widget build(fm.BuildContext context) {
+    return fm.Row(
+        children: [
+          fm.Expanded(child: DefinitionButton()),
+          fm.Expanded(child: SettingsButton()),
+          fm.Expanded(child: CopyImageButton()),
+        ]);
+  }
+}
+
+class AnimationForEmbed extends fm.StatelessWidget {
+
+  @override
+  fm.Widget build(fm.BuildContext context) {
+    return pp.ChangeNotifierProvider(
+        create: (_) => DanceModel(context),
+        child: pp.Consumer<TamState>(
+            builder: (context, tamState, _) {
+              _startModel(context,tamState,null);
+              //  Need to stack up a few necessary Flutter widgets here
+              return fm.Navigator(
+                  pages:[fm.MaterialPage(child:fm.Material(child:AnimationFrame()))],
+                  onDidRemovePage: (page) { }
+              );
+              //return fm.Card(child: AnimationFrame());
+            }
+        ),
+    );
+  }
+}
+
+class AnimationFrame extends fm.StatefulWidget {
+
+  @override
+  _AnimationFrameState createState() => _AnimationFrameState();
+}
+
+class _AnimationFrameState extends fm.State<AnimationFrame>
+    with fm.SingleTickerProviderStateMixin {
+
+  Vector locationTapped = Vector();
+  Dancer? dancerTapped;
+  String partstr = '';
+  bool hasParts = false;
+  List<double> partsValues = [];
+  int currentPart = 0;
+  String startFormation = '';  // for sequencer
+
+  //  Constructor
+  _AnimationFrameState();
+
+  fm.PopupMenuItem<String> oneItem(String colorName) =>
+      fm.PopupMenuItem(
+        value: colorName,
+        child:fm.Container(
+            padding: fm.EdgeInsets.all(10),
+            width: 120,
+            decoration: colorName == 'default'
+                ?  fm.BoxDecoration(color: Color.WHITE)
+                : fm.BoxDecoration(color: Color.fromName(colorName), border:fm.Border.all(color:Color.BLACK)),
+            child:fm.Text(colorName, style: fm.TextStyle(color: colorName.startsWith('B') ? Color.WHITE : Color.BLACK))
+        ),
+      );
+
+  Future<String?> _showColorPopup(fm.BuildContext context, String currentColor) {
+    var screenSize = fm.MediaQuery.of(context).size.v;
+    return fm.showMenu<String>(
+        context: context,
+        position: fm.RelativeRect.fromLTRB(locationTapped.x, locationTapped.y,
+          screenSize.x, screenSize.y),
+        initialValue: currentColor,
+        items: [
+          oneItem('Black'),
+          oneItem('Blue'),
+          oneItem('Cyan'),
+          oneItem('Gray'),
+          oneItem('Green'),
+          oneItem('Magenta'),
+          oneItem('Orange'),
+          oneItem('Red'),
+          oneItem('White'),
+          oneItem('Yellow'),
+          oneItem('default')
+        ]
+    );
+  }
+
+
+  @override
+  fm.Widget build(fm.BuildContext context) {
+    return pp.Consumer3<TamState,HighlightState,DanceModel>(
+      builder: (context,appState,highlightState,danceModel,_) => fm.LayoutBuilder(
+        builder: (context, constraints) {
+          final isSmall = constraints.maxHeight < 350;
+          final isSequencer = appState.mainPage == MainPage.SEQUENCER;
+          //  Update current part which will notify definition to change highlights
+          later(() {
+            highlightState.currentPart = danceModel.currentPart;
+          });
+          return fm.Column(children: [
+                //  Dance area with animations
+                fm.Expanded(child: pp.Consumer2<Settings,SequencerModel>(
+                    builder: (context, settings, sequencerModel, child) {
+                      final painter = DancePainter(danceModel);
+                      //  Send current settings to the dance model
+                      final setGeometry = Geometry.fromString(Settings.geometry).geometry;
+                      var geometryChanged = setGeometry != danceModel.geometryType;
+                      danceModel.geometry =  setGeometry;
+
+                      //  TODO this is still needed
+                      //  because SequencerModel is built at the very top
+                      if (isSequencer && Settings.showDancerColors == 'Random')
+                        danceModel.setRandomColors(true);
+                      else {
+                        danceModel.setRandomColors(false);
+                      }
+
+                      if (appState.mainPage != MainPage.SEQUENCER ||
+                          Settings.showDancerColors == 'By Couple') {
+                        for (var i=1; i <= 6; i++) {
+                          final coupleColor = Settings.coupleColor(i);
+                          danceModel.setDancerColor(
+                              i, Color.fromName(coupleColor), byCouple: true);
+                        }
+                        for (var i = 1; i <= 12; i++) {
+                          final individualColor = Settings.dancerColor(i);
+                          if (individualColor != 'default')
+                            danceModel.setDancerColor(
+                                i, Color.fromName(individualColor));
+                        }
+                      }
+                      if (appState.play)
+                        danceModel.doPlay();
+
+                      //  Routines to handle pointer events
+                      final tapDownHandler = (fm.TapDownDetails details) {
+                        locationTapped = details.globalPosition.v;
+                        dancerTapped = painter.dancerAt(
+                            painter.mouse2dance(details.localPosition.v));
+                      };
+                      final longPressHandler = () {
+                        if (dancerTapped != null) {
+                          _showColorPopup(
+                              context, Settings.dancerColor(dancerTapped!.number.i))
+                              .then((value) {
+                            if (value != null)
+                              Settings.setDancerColor(dancerTapped!.number.i, value);
+                          });
+                        }
+                      };
+
+                      //  For sequencer show beats
+                      if (isSequencer && geometryChanged)
+                        sequencerModel.reset();
+
+                      //  Wrap dance area with widget to detect pointer events
+                      //  Hook up mouse wheel
+                      //  Need separate widget as GestureDetector doesn't handle it
+                      return fm.Listener(
+                        onPointerSignal: (fg.PointerSignalEvent event) {
+                          if (event is fg.PointerScrollEvent) {
+                            if (event.scrollDelta.dy < 0)
+                              danceModel.stepBack();
+                            else if (event.scrollDelta.dy > 0)
+                              danceModel.stepForward();
+                          }
+                        },
+                        //  Set up other mouse / tap actions
+                        child: fm.GestureDetector(
+                            onTapDown: tapDownHandler,
+                            onSecondaryTapDown: tapDownHandler,
+                            onTap: () {
+                              if (dancerTapped != null) {
+                                setState(() {
+                                  danceModel.togglePath(dancerTapped!);
+                                });
+                              }
+                            },
+                            onLongPress: longPressHandler,
+                            onSecondaryTap: longPressHandler,
+                            //  Stack to show info on animation
+                            child: fm.RepaintBoundary(
+                              key: danceModel.keyForImageCopy,
+                              child: fm.Stack(
+                                  children: [
+                                    //  Finally here is the dance area widget
+                                    fm.CustomPaint(
+                                      painter: painter,
+                                      child: fm.Center(), // so CustomPaint gets sized correctly
+                                    ),
+                                    //  Note that fades out as animation starts
+                                    _Note(),
+                                    //  Info to show at bottom right
+                                    //  Sequencer Beat, Speed, Looping
+                                    fm.Positioned(
+                                      bottom: 0.0,
+                                      right: 0.0,
+                                      child: fm.Row(
+                                        spacing: 10,
+                                        children: [
+                                          if (isSequencer)
+                                            _BeatText(),
+                                          _SpeedText(),
+                                          _LoopText()
+                                        ],
+                                      )
+                                    )
+                                  ]),
+                            )
+                        ),
+                      );
+                    })),
+
+                //  Slider to show current animation position
+            _Slider(),
+
+                //  Painter to show animation start, end, beats, and parts
+            if (!isSmall)
+              _SliderTicks(),
+
+                //  Buttons to control the animation
+            _AnimationButtons()
+              ]); }
+      )
+    );
+  }
+}
+
+//  Sequence beat info to show at lower right
+class _BeatText extends fm.StatelessWidget {
+  @override
+  fm.Widget build(fm.BuildContext context) =>
+      pp.Consumer2<SequencerModel,DanceModel>(builder: (
+          context, sequencerModel, danceModel,_) {
+        final tb = sequencerModel.totalBeats().i;
+        final bb = danceModel.beater.beat.i.clamp(0, tb);
+        return fm.Text('$bb of $tb',style:fm.TextStyle(fontSize:24));
+      });
+}
+
+//  Speed shown at lower right if not the default Normal
+class _SpeedText extends fm.StatelessWidget {
+  @override
+  fm.Widget build(fm.BuildContext context) {
+    var speedText = Settings.speed.replaceFirst('Normal( Speed)?'.r,'');
+    return fm.Text(speedText,style:fm.TextStyle(fontSize:24));
+  }
+}
+
+//  If looping is on, show at lower right
+class _LoopText extends fm.StatelessWidget {
+  @override
+  fm.Widget build(fm.BuildContext context) =>
+      pp.Consumer<DanceModel>(builder: (context, danceModel,_) {
+        var loopText = danceModel.looping ? ' Loop' : '';
+        return fm.Text(loopText, style:fm.TextStyle(fontSize:24));
+      });
+}
+
+//  Note to show at the top of the animation
+class _Note extends fm.StatelessWidget {
+  @override
+  fm.Widget build(fm.BuildContext context) =>
+      pp.Consumer2<BeatNotifier,DanceModel>(
+          builder: (context,beater2,danceModel,_) =>
+          //  Fade out the note as the animation begins
+              fm.Opacity(
+                  opacity: ((-beater2.beat)/2.0).coerceIn(0.0, 1.0),
+                  child:fm.Container(
+                      color: Color.WHITE,
+                      child:fm.Text(danceModel.animationNote,
+                          style:fm.TextStyle(fontSize:20))
+                  )));
+
+
+}
+
+
+//  Slider to show current animation position
+class _Slider extends fm.StatelessWidget {
+  @override
+  fm.Widget build(fm.BuildContext context) =>
+      fm.Container(
+        color: Color.LIGHTGRAY,
+        child: fm.SliderTheme(
+          data: fm.SliderThemeData(),
+          child: pp.Consumer2<DanceModel,BeatNotifier>(
+            builder:(context,danceModel,beater,child) => fm.Slider(
+              activeColor: Color.HIGHLIGHT,
+              inactiveColor: Color.GRAY,
+              value: danceModel.totalBeats > 2.0
+                  ? min(100,(beater.beat + danceModel.leadin) * 100.0 / danceModel.totalBeats)
+                  : 0.0,
+              min: 0,
+              max: 100,
+              onChanged: (double value) {
+                beater.beat =
+                    (value * danceModel.totalBeats / 100.0) - danceModel.leadin;
+              },
+            ),
+          ),
+        ),
+      );
+
+}
+
+//  Image below the slider showing tic marks, start, end, and any parts
+class _SliderTicks extends fm.StatelessWidget {
+  @override
+  fm.Widget build(fm.BuildContext context) =>
+      pp.Consumer<DanceModel>(
+        builder: (context, danceModel,_) => fm.CustomPaint(
+          painter: _SliderTicsPainter(
+              beats: danceModel.totalBeats,
+              parts: danceModel.partstr,
+              isParts: danceModel.hasParts,
+              isCalls: danceModel.hasCalls
+          ),
+          size: fm.Size.fromHeight(40.0),
+        ),
+      );
+}
+
+//  Row of buttons to control animation
+class _AnimationButtons extends fm.StatelessWidget {
+  @override
+  fm.Widget build(fm.BuildContext context) =>
+    pp.Consumer<DanceModel>(
+      builder: (context,danceModel,_) {
+        final beater = pp.Provider.of<BeatNotifier>(context,listen: false);
+        return fm.Container(
+          color: Color.FLOOR,
+          child: fm.Row(
+              children: [
+                _DanceActionButton(
+                    'Back One Part',
+                    fm.Icons.skip_previous,
+                    onPressed: () {
+                      danceModel.goToPreviousPart();
+                    }),
+                _DanceActionButton(
+                    'Back 0.1 Step',
+                    fm.Icons.navigate_before,
+                    onPressed: () {
+                      danceModel.stepBack();
+                    }),
+                //  Play / Pause button
+                _DanceActionButton(
+                  'Play',
+                  beater.isRunning
+                      ? fm.Icons.pause
+                      : fm.Icons.play_arrow,
+                  onPressed: () {
+                    //  If running, turn it off
+                    if (beater.isRunning) {
+                      danceModel.doPause();
+                    } else {
+                      //  Not running - start animation
+                      danceModel.doPlay();
+                    }
+                  },
+                ),
+                _DanceActionButton(
+                    'Forward 0.1 Step',
+                    fm.Icons.navigate_next,
+                    onPressed: () {
+                      danceModel.stepForward();
+                    }),
+                _DanceActionButton('Forward One Part',
+                    fm.Icons.skip_next,
+                    onPressed: () {
+                      danceModel.goToNextPart();
+                    })
+              ]),
+        );
+      }
+    );
+
+}
+
+class _ScaledIcon extends fm.StatelessWidget {
+  final fm.IconData icon;
+  _ScaledIcon(this.icon);
+  @override
+  fm.Widget build(fm.BuildContext context) =>
+  fm.LayoutBuilder(builder: (context, constraints) {
+    final isSmall = constraints.maxHeight < 350;
+    final iconSize = isSmall ? 16.0 : 24.0;
+    return fm.Icon(icon,size:iconSize);
+  });
+}
+
+class _DanceActionButton extends fm.StatelessWidget {
+  final String name;
+  final fm.IconData icon;
+  final fm.VoidCallback onPressed;
+  _DanceActionButton(this.name,this.icon,{required this.onPressed});
+  @override
+  fm.Widget build(fm.BuildContext context) {
+    return fm.Expanded(
+        child: Button(name,
+            onPressed: onPressed,
+            child: _ScaledIcon(icon)));
+  }
+}
+
+class _SliderTicsPainter extends fm.CustomPainter {
+
+  double beats = 0.0;
+  var isParts = false;
+  var isCalls = false;
+  List<double> partValues = [];
+  Map<String,fm.TextPainter> textPainters = {};
+
+  _SliderTicsPainter({
+    required this.beats,
+    required String parts,
+    this.isParts=false,
+    this.isCalls=false
+  }) {
+    //  The string of parts is the length of each part except the first,
+    //  separated by semi-colons.
+    //  Convert these to a list of doubles, of the beat where each part starts.
+    if (parts.isNotEmpty) {
+      var partsList = parts.split(';');
+      var partSum = 0.0;
+      for (var i=0; i<partsList.length; i++) {
+        var partValue = partsList[i].d;
+        partValues.add(partValue + partSum);
+        partSum += partValue;
+      }
+    }
+  }
+
+  @override
+  void paint(fm.Canvas ctx, fm.Size size) {
+
+    if (beats <= 0.0)  // sanity check
+      return;
+    //  There's a lot to do to just draw one item of text
+    //  and it has to be repeated for each text item.
+    //  Thus this function.
+    void drawCenteredTextAt(String text, double x, double y) {
+      if (textPainters[text] == null) {
+        var span = fm.TextSpan(text: text,
+            style: fm.TextStyle(
+                fontSize: size.height / 3.0, color: fm.Colors.white));
+        textPainters[text] = fm.TextPainter(text: span,
+            textDirection: fm.TextDirection.ltr)
+          ..layout();
+      }
+      final tp = textPainters[text]!;
+      //  TextSpan center doesn't seem to work, but we can calculate it
+      final textOffset = tp.width / 2.0;
+      tp.paint(ctx, fm.Offset(x-textOffset,y));
+    }
+
+    //  Adjustment for slider ends
+    var adjust = 24;
+    var myLeft = adjust;
+    var myWidth = size.width - adjust*2;
+
+    //  Draw background
+    ctx.drawRect(fm.Rect.fromLTWH(0,0,size.width,size.height),
+        fm.Paint()..color = Color.TICS);
+
+    //  Draw tic marks
+    var p = fm.Paint()
+      ..style = fm.PaintingStyle.stroke
+      ..strokeWidth = 1.0
+      ..color = Color.WHITE;
+    for (var i=0; i <= beats; i++) {
+      var x = myLeft + myWidth * i / beats;
+      ctx.drawLine(fm.Offset(x,0), fm.Offset(x,size.height/4.0), p);
+    }
+
+    //  Draw tic labels
+    if (beats > 4.0) {
+      var y = size.height * 3.0 / 8.0;
+      //  This assumes leadin and leadout are both 2 beats
+
+      //  Draw 'Start' and 'End'
+      var x1 = myLeft + myWidth * 2.0 / beats;
+      drawCenteredTextAt('Start',x1,y);
+      var x2 = myLeft + myWidth * (beats - 2.0) / beats;
+      drawCenteredTextAt('End', x2, y);
+
+      //  Draw parts or fractions labels
+      if (partValues.isNotEmpty) {
+        // If fractions will write as 'a/b'
+        var denominator = (partValues.length + 1).s;
+        for (var i=0; i<partValues.length; i++) {
+          if (partValues[i] < beats-4) {  // sanity check
+            var x = myLeft + myWidth * (2.0+partValues[i]) / beats;
+            //  Text for fractions
+            var text = (i+1).s + '/' + denominator;
+            //  If parts then show part number instead of fraction
+            if (isParts||isCalls)
+              text = (i+2).s;
+            //  Text is 'Part 2' to show that call has parts
+            if (isParts && i == 0)
+              text = 'Part 2';
+            drawCenteredTextAt(text, x, y);
+          }
+        }
+      }
+
+
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant fm.CustomPainter oldDelegate) {
+    return true;  // ???
+  }
+
+}

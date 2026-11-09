@@ -1,0 +1,113 @@
+/*
+
+  Taminations Square Dance Animations
+  Copyright (C) 2026 Brad Christie
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+import '../common.dart';
+
+class PassTheAxle extends Action with CallWithParts, ButCall {
+
+  @override int numberOfParts = 4;
+  @override final level = LevelData.C1;
+  @override var butCall = 'Trade';
+  @override var help = '''Pass the Axle is a 4-part call:
+  1.  Pass Thru
+  2.  Centers Pass Thru, others Cross Cast Back
+  3.  Swing
+  4.  Centers Trade
+Part 3 can be replaced with [But] Cast Off n/4
+Part 4 can be replaced with But (another call)''';
+  @override var helplink = 'c1/pass_the_axle';
+
+  PassTheAxle(super.name);
+
+  @override
+   void performPart1(CallContext ctx) {
+    ctx.applyCalls('Pass Thru');
+  }
+
+  @override
+   void performPart2(CallContext ctx) {
+    ctx.applyCalls('Centers Pass Thru While Ends Cross Cast Back');
+    ctx.matchStandardFormation();
+  }
+
+  @override
+   void performPart3(CallContext ctx) {
+    if (norm.endsWith('CastOff34') ||
+        butCall.norm.endsWith('CastOff34'))
+      ctx.applyCalls('Cast Off 3/4');
+    else if (norm.endsWith('CastOff14') ||
+        butCall.norm.endsWith('CastOff14'))
+      ctx.applyCalls('Hinge');
+    else
+      ctx.applyCalls('Swing');
+  }
+
+  @override
+  void performPart4(CallContext ctx) {
+    if (!butCall.norm.matches('CastOff(3|1)4'.ri))
+      ctx.applyCalls('Centers $butCall');
+    else
+      ctx.applyCalls('Centers Trade');
+  }
+
+}
+
+class TheAxle extends Action with CallWithParts, ButCall {
+
+  @override int numberOfParts = 3;
+  @override final level = LevelData.C1;
+  @override var butCall = 'Swing';
+  @override var help = '''The Axle is a 3-part call:
+  1.  Centers Pass Thru if they can, others Cross Cast Back
+  2.  Swing
+  3.  Centers Trade
+Part 2 can be replace with [But] Cast Off 3/4
+Part 3 can be replaced with But (another call)''';
+  @override var helplink = 'c1/pass_the_axle';
+
+  TheAxle(super.name);
+
+  @override
+   void performPart1(CallContext ctx) {
+    if (ctx.center(4).every((d) => d.isFacingIn))
+      ctx.applyCalls('Centers Pass Thru While Ends Cross Cast Back');
+    else
+      ctx.applyCalls('Ends Cross Cast Back');
+    ctx.matchStandardFormation();
+  }
+
+  @override
+  void performPart2(CallContext ctx) {
+    if (norm.endsWith('CastOff34') ||
+        butCall.norm.endsWith('CastOff34'))
+      ctx.applyCalls('Cast Off 3/4');
+    else
+      ctx.applyCalls('Swing');
+  }
+
+  @override
+  void performPart3(CallContext ctx) {
+    if (butCall.norm != 'CastOff34')
+      ctx.applyCalls('Centers $butCall');
+    else
+      ctx.applyCalls('Centers Trade');
+  }
+
+}

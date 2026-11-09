@@ -1,0 +1,91 @@
+/*
+
+  Taminations Square Dance Animations
+  Copyright (C) 2026 Brad Christie
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+import '../common.dart';
+import '../common/select_location.dart';
+
+//  This is a class for 3- or  4-dancer calls that don't have specific code
+//  to deal with asymmetric formations.
+//  Classes that inherit from this will generally not have their
+//  own methods for performing calls with 6 or 8 dancers.
+//  The formation is split and the call performed on each side.
+mixin SplitCall on Action {
+
+  //  If the length is too long for this split side,
+  //  compact in that direction
+  void _checkLength(CallContext ctx, double short, double long) {
+    if (short.isAbout(0) && long.isGreaterThan(2))
+      ctx.adjustToFormation(Formation('Compact Wave RH'));
+  }
+
+  void _performOneSplit(CallContext ctx, String splitWhere) {
+    var splitAmount = ctx.dancers.length ~/ 2;
+    var unSplitName = name.replaceFirst('Split', '');
+    ctx.selectContext(SelectLocation('$splitWhere $splitAmount'), (ctx3) {
+      ctx3.dancers.center();
+      //  Use applyCalls here instead of super.performCall
+      //  so it can pick up AnimatedCall in addition to CodedCall
+      ctx3.applyCalls(unSplitName);
+      var b = ctx3.bounds();
+      if (splitWhere=='Near' || splitWhere=='Far')
+        _checkLength(ctx3, b.y, b.x);
+      else
+        _checkLength(ctx3, b.x, b.y);
+    });
+
+  }
+
+  @override
+  void performCall(CallContext ctx) {
+    if (ctx.dancers.length > 4) {
+      try {
+        //  First try splitting on the horizontal axis into
+        //  Near and Far groups.
+        //  Use a subcontext so if this fails it doesn't mess up our context
+        ctx.subContext(ctx.dancers, (ctx2) {
+          _performOneSplit(ctx2,'Near');
+          _performOneSplit(ctx2,'Far');
+        });
+      } on CallError {
+        //  That didn't work, so try splitting on the vertical axis
+        //  into Left and Right groups
+        try {
+          ctx.subContext(ctx.dancers, (ctx2) {
+            _performOneSplit(ctx2,'Left');
+            _performOneSplit(ctx2,'Right');
+          });
+        } on CallError {
+          throw FormationNotFoundError(name);
+        }
+      }
+    } else {
+      //  We have 4 or fewer dancers
+      super.performCall(ctx);
+    }
+  }
+
+  //  Derived classes need to implement this method
+  //  working with the dancers from each split side
+  @override
+  Path performOne(Dancer d, CallContext ctx) {
+    throw FormationNotFoundError(name);
+  }
+
+}
