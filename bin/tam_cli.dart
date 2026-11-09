@@ -65,6 +65,30 @@ Map<String, dynamic> runSequence(Map s) {
       ]);
     }
   }
+  // Optional: Zwischenpositionen fuer die Animation (alle `frames` Beats)
+  final step = (s['frames'] as num?)?.toDouble();
+  Map<String, dynamic>? anim;
+  if (step != null && step > 0) {
+    final ds = [for (final d in model.animation.dancers) if (!d.isPhantom) d];
+    final frames = <List<Object>>[];
+    for (var t = 0.0; t <= beatSum + 1e-9; t += step) {
+      for (final d in ds) {
+        d.animate(t);
+      }
+      frames.add([
+        _r(t),
+        [for (final d in ds) [_r(d.location.x), _r(d.location.y), _r(d.angleFacing * 180 / pi)]]
+      ]);
+    }
+    var acc = 0.0;
+    anim = {
+      'dancers': [for (final d in ds)
+        {'n': d.number, 'couple': d.numberCouple, 'boy': d.gender == 1}],
+      'call_starts': [for (final b in beats) (acc += b) - b],
+      'total_beats': beatSum,
+      'frames': frames,
+    };
+  }
   final end = s['end'] as String?;
   bool? endOk;
   var endMsg = '';
@@ -88,6 +112,7 @@ Map<String, dynamic> runSequence(Map s) {
     'warnings': warnings, 'beats': beats,
     'tam_calls': model.calls.map((c) => c.name).toList(),
     if (wantPos) 'positions': positions,
+    if (anim != null) 'animation': anim,
   };
 }
 
