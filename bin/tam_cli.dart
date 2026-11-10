@@ -24,7 +24,9 @@ const engineVersion = 'taminations-flutter d96ed75 (headless-spike)';
 double _r(double v) => (v * 1000).roundToDouble() / 1000;
 
 Map<String, dynamic> runSequence(Map s) {
-  final lines = (s['lines'] ?? s['calls'] as List).cast<String>();
+  // Ein Eintrag ist ein Call-Text oder {"alts": [[...], [...]]}: Alternativen,
+  // die der Reihe nach probiert werden, bis eine komplett durchgeht (Rueckfall).
+  final lines = (s['lines'] ?? s['calls']) as List;
   final wantPos = s['positions'] == true;
   final model = SequencerModel();
   model.setStartingFormation((s['start'] as String?) ?? 'Static Square');
@@ -32,24 +34,64 @@ Map<String, dynamic> runSequence(Map s) {
   var error = '';
   final warnings = <String>[];
   final beats = <double>[];
+  final altUsed = <int>[];
   final positions = <List<List<Object>>>[];
   var beatSum = 0.0;
-  for (var i = 0; i < lines.length; i++) {
-    final before = model.calls.length;
-    bool ok;
-    try {
-      ok = model.loadOneCall(lines[i]);
-    } catch (e) {
-      ok = false;
-      model.errorString = 'Exception: $e';
+
+  // Probiert eine Folge von Calls; bei einem Fehler werden die schon
+  // angewandten Teile zurueckgenommen. Liefert null bei Erfolg, sonst Fehlertext.
+  String? tryCalls(List<String> calls) {
+    var applied = 0;
+    for (final c in calls) {
+      final before = model.calls.length;
+      bool ok;
+      try {
+        ok = model.loadOneCall(c);
+      } catch (e) {
+        ok = false;
+        model.errorString = 'Exception: $e';
+      }
+      if (!ok) {
+        final err = model.errorString;
+        for (var k = 0; k < applied; k++) {
+          model.undoLastCall();
+        }
+        return err;
+      }
+      if (model.calls.length > before) applied++;
     }
-    if (!ok) {
+    return null;
+  }
+
+  for (var i = 0; i < lines.length; i++) {
+    final item = lines[i];
+    final alts = item is String
+        ? [
+            [item]
+          ]
+        : [for (final a in ((item as Map)['alts'] as List)) (a as List).cast<String>()];
+    final before = model.calls.length;
+    String? firstErr;
+    var used = -1;
+    for (var k = 0; k < alts.length; k++) {
+      final err = tryCalls(alts[k]);
+      if (err == null) {
+        used = k;
+        break;
+      }
+      firstErr ??= err;
+    }
+    if (used < 0) {
       failPos = i;
-      error = model.errorString;
+      error = firstErr ?? '';
       break;
     }
+    altUsed.add(used);
     if (model.errorString.isNotEmpty) warnings.add('$i:${model.errorString}');
-    final b = model.calls.length > before ? model.calls.last.beats : 0.0;
+    var b = 0.0;
+    for (var k = before; k < model.calls.length; k++) {
+      b += model.calls[k].beats;
+    }
     beats.add(b);
     beatSum += b;
     if (wantPos) {
@@ -109,7 +151,7 @@ Map<String, dynamic> runSequence(Map s) {
     if (s.containsKey('n_start')) 'n_start': s['n_start'],
     'end': end, 'end_ok': endOk, 'end_msg': endMsg,
     'ok': failPos == null, 'fail_pos': failPos, 'error': error,
-    'warnings': warnings, 'beats': beats,
+    'warnings': warnings, 'beats': beats, 'alt_used': altUsed,
     'tam_calls': model.calls.map((c) => c.name).toList(),
     if (wantPos) 'positions': positions,
     if (anim != null) 'animation': anim,
