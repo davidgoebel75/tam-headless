@@ -1,0 +1,9 @@
+name: material_ui
+description: Headless-Ersatz fuer package:material_ui (Upstream ab 1.6.115), leitet auf den flutter-Shim um (intern#163).
+publish_to: none
+version: 0.0.0
+environment:
+  sdk: ">=3.10.0 <4.0.0"
+dependencies:
+  flutter:
+    path: ../flutter

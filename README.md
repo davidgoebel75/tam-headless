@@ -10,7 +10,7 @@ ohne Flutter als eigenständige Exe bauen – wie groß, wie schnell, gleiche Er
 
 | Teil | Inhalt |
 |---|---|
-| `lib/` | Upstream `bradchristie/taminations-flutter` @ `d96ed75`, **6 Zeilen in 2 Dateien geändert** (siehe `git log -p`) |
+| `lib/` | Upstream `bradchristie/taminations-flutter` @ `dcf5124` (1.6.115), **6 Zeilen in 2 Dateien geändert** (siehe `git log -p`) |
 | `assets/` | XML-Bewegungsdefinitionen – **zur Laufzeit nicht nötig** (die Calls stecken als Dart-Code in `lib/calls/`, Gegenprobe ohne Assets: 0 Abweichungen); nur als Referenz behalten |
 | `shims/` | Ersatzpakete `flutter`, `provider`, `super_clipboard`, `shared_preferences` mit genau den APIs, die der Rechenkern nutzt (Color, ChangeNotifier, Ticker, rootBundle aus Datei …) |
 | `bin/tam_cli.dart` | Kommandozeilen-Programm (JSON-Zeilen über stdin/stdout, Stapelmodus `--eval`) |
@@ -52,5 +52,12 @@ dass künftige Upstream-Stände wieder Dateien laden.
 | Arbeitsspeicher | max. 126 MB im Stapellauf (alle Ergebnisse im Speicher) |
 | Build-Zeit | ~11 s, nur Dart-SDK nötig |
 
-Upstream aktualisieren: neuen Stand nach `lib/` kopieren (XML nur als Referenz), die zwei Änderungen
-erneut anwenden (Git zeigt Konflikte), bauen, Gegenprobe mit `eval/` laufen lassen.
+Upstream aktualisieren (zuletzt 2026-11-15 auf `dcf5124` / 1.6.115):
+1. `git switch upstream`, `lib/` und nur die `*.xml`/`*.dtd` aus `assets/` vom neuen Stand
+   herüberkopieren, als „Upstream … (unverändert)“ committen.
+2. `git switch master && git merge upstream` – Git wendet die eigenen Änderungen erneut an.
+3. Bauen. Neue Flutter-Pakete im Rechenkern zeigen sich als Übersetzungsfehler und brauchen einen
+   Shim (1.6.115: `package:material_ui` → `shims/material_ui`, leitet auf den flutter-Shim um,
+   dazu eine Zeichen-Attrappe `Path`). `engineVersion` in `bin/tam_cli.dart` anpassen.
+4. Gegenprobe: alte und neue Exe mit `--eval` auf denselben Eingaben, Ergebnisse müssen gleich sein
+   (1.6.115: 6.838 Sequenzen, 0 Abweichungen). Die alte Exe liegt als `dist/tam_cli_<stand>.exe` daneben.

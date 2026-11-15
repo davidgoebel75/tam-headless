@@ -19,7 +19,7 @@ import 'dart:math';
 import 'package:taminations/sequencer/sequencer_model.dart';
 import 'package:taminations/settings.dart';
 
-const engineVersion = 'taminations-flutter d96ed75 (headless-spike)';
+const engineVersion = 'taminations-flutter dcf5124 1.6.115 (headless)';
 
 double _r(double v) => (v * 1000).roundToDouble() / 1000;
 
