@@ -3,6 +3,10 @@
   Taminations Square Dance Animations
   Copyright (C) 2026 Brad Christie
 
+  Modified 2026-11-09 by David Goebel for tam-headless: removed the exports
+  of the user-interface files (button, dance_painter, math/vectorui,
+  tam_state, title_bar) so the sequencer builds without Flutter.
+
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or

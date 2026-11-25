@@ -1,5 +1,16 @@
 # tam-headless – Spike: Taminations-Sequencer ohne Flutter
 
+> **English summary.** tam-headless builds the sequencer of
+> [Taminations Square Dance Animations](https://github.com/bradchristie/taminations-flutter)
+> (Copyright (C) 2026 Brad Christie) as a stand-alone command-line program `tam_cli.exe`,
+> without Flutter. Callers Caddy ships this program and starts it as a separate process.
+>
+> **License:** GNU General Public License, version 3 or (at your option) any later version –
+> see `LICENSE`. This is a **modified version** of Taminations: `lib/` is upstream code with
+> two changed files (marked in their headers: `lib/common_flutter.dart`, `lib/dance_model.dart`);
+> `bin/` and `shims/` are new (Copyright (C) 2026 David Goebel, same license).
+> The tag `tam-cli-<version>` marks the exact source of each released `tam_cli.exe`.
+
 Spike zu Callers Caddy **intern#163** (2026-11-09). Frage: Lässt sich der Taminations-Sequencer
 ohne Flutter als eigenständige Exe bauen – wie groß, wie schnell, gleiche Ergebnisse?
 
